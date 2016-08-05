@@ -41,7 +41,14 @@ export -f pathremove pathprepend pathappend
 
 # Set the initial path
 export PATH=/bin:/usr/bin:/usr/local/terraform/bin:/home/matt/mattBin/
+
+# set environment variables
+export GPGKEY="reflexion-user (pass-poc) <matthew@reflexionhealth.com>"
+
+# custom alias's
+alias histg="history | grep "
 alias time="date +'%T'"
+alias sshPmaster="ssh matt@54.213.106.89"
 
 if [ $EUID -eq 0 ] ; then
 pathappend /sbin:/usr/sbin
