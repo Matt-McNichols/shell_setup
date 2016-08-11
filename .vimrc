@@ -78,7 +78,7 @@ autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
-highlight ExtraWhitespace ctermbg=lightBlue guibg=lightBlue
+highlight ExtraWhitespace ctermbg=LightGrey guibg=LightGrey
 match ExtraWhitespace /^\s\+/
 autocmd BufWinEnter * match ExtraWhitespace /^\s\+/
 autocmd InsertEnter * match ExtraWhitespace /^\s\+\%#\@<!$/
