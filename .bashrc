@@ -1,89 +1,118 @@
-# Begin /etc/profile
-# Written for Beyond Linux From Scratch
-# by James Robertson <jameswrobertson@earthlink.net>
-# modifications by Dagmar d'Surreal <rivyqntzne@pbzpnfg.arg>
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+export PATH=$PATH:/home/matt/mattBin/include/
+export WINMATT=/mnt/c/Users/Matt/
 
-# System wide environment variables and startup programs.
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
 
-# System wide aliases and functions should go in /etc/bashrc.  Personal
-# environment variables and startup programs should go into
-# ~/.bash_profile.  Personal aliases and functions should go into
-# ~/.bashrc.
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoredups:ignorespace
 
-# Functions to help us manage paths.  Second argument is the name of the
-# path variable to be modified (default: PATH)
-pathremove () {
-  local IFS=':'
-    local NEWPATH
-    local DIR
-    local PATHVARIABLE=${2:-PATH}
-  for DIR in ${!PATHVARIABLE} ; do
-    if [ "$DIR" != "$1" ] ; then
-      NEWPATH=${NEWPATH:+$NEWPATH:}$DIR
-        fi
-        done
-        export $PATHVARIABLE="$NEWPATH"
-}
+# append to the history file, don't overwrite it
+shopt -s histappend
 
-pathprepend () {
-  pathremove $1 $2
-    local PATHVARIABLE=${2:-PATH}
-  export $PATHVARIABLE="$1${!PATHVARIABLE:+:${!PATHVARIABLE}}"
-}
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
 
-pathappend () {
-  pathremove $1 $2
-    local PATHVARIABLE=${2:-PATH}
-  export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
-}
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
 
-export -f pathremove pathprepend pathappend
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# Set the initial path
-export PATH=/bin:/usr/bin:/usr/local/terraform/bin:/home/matt/mattBin/
-
-# set environment variables
-export GPGKEY="reflexion-user (pass-poc) <matthew@reflexionhealth.com>"
-
-# custom alias's
-alias histg="history | grep "
-alias time="date +'%T'"
-alias sshPmaster="ssh matt@54.213.106.89"
-
-if [ $EUID -eq 0 ] ; then
-pathappend /sbin:/usr/sbin
-unset HISTFILE
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# Setup some environment variables.
-export HISTSIZE=1000
-export HISTIGNORE="&:[bf]g:exit"
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color) color_prompt=yes;;
+esac
 
-# Set some defaults for graphical systems
-export XDG_DATA_DIRS=/usr/share/
-export XDG_CONFIG_DIRS=/etc/xdg/
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
 
-# Setup a red prompt for root and a green one for users.
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+# We have color support; assume it's compliant with Ecma-48
+# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+# a case would tend to support setf rather than setaf.)
+color_prompt=yes
+    else
+color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi
+
+# prompt colors
 NORMAL="\[\e[0m\]"
 RED="\[\e[1;31m\]"
 GREEN="\[\e[1;32m\]"
 if [[ $EUID == 0 ]] ; then
-PS1="$RED\u [ $NORMAL\w$RED ]# $NORMAL"
+PS1 = "$RED\u [ $NORMAL\w$RED ]# $NORMAL"
 else
-PS1="$GREEN\u [ $NORMAL\w$GREEN ]\$ $NORMAL"
+ps1="$GREEN\u [ $NORMAL\w$GREEN ]\$"
 fi
 
-# setup matt's alias's
 alias vi='vim'
-alias la='ls -A'
-alias ll='ls -ltr'
-alias chr='~/DockerSandbox/docker_chrome'
-for script in /etc/profile.d/*.sh ; do
-    if [ -r $script ] ; then
-    . $script
-    fi
-    done
-
-    unset script RED GREEN NORMAL
-
-# End /etc/profile
